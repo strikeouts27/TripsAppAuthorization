@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TripsApp.Models.Trip>
+@{
+    ViewData["Title"] = "Trips Log";
+    var status = ViewData["StatusMessage"] as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-1">Trips Log</h1>
+        <p class="text-muted mb-0">Keep track of where you have been and what is next.</p>
+    </div>
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <a class="btn btn-primary" asp-controller="Trips" asp-action="AddStep1">Add Trip</a>
+    }
+</div>
+
+@if (!string.IsNullOrWhiteSpace(status))
+{
+    <div class="alert alert-success" role="alert">@status</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">No trips logged yet. Start by adding your first destination.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Dates</th>
+                    <th scope="col">Accommodations</th>
+                    <th scope="col">Contact</th>
+                    <th scope="col">Activities</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var trip in Model)
+                {
+                    <tr>
+                        <td>@trip.Destination</td>
+                        <td>@trip.StartDate.ToString("MMM d, yyyy") - @trip.EndDate.ToString("MMM d, yyyy")</td>
+                        <td>@trip.Accommodations</td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(trip.Phone))
+                            {
+                                <div>@trip.Phone</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(trip.Email))
+                            {
+                                <div>@trip.Email</div>
+                            }
+                        </td>
+                        <td>@trip.Activities</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

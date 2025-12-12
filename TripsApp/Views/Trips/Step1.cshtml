@@ -1,0 +1,39 @@
+@model TripsApp.Models.TripStep1ViewModel
+@{
+    ViewData["Title"] = "Add Trip - Step 1";
+}
+
+<h2 class="mb-3">Step 1: Destination and Dates</h2>
+<p class="text-muted">All fields on this page are required.</p>
+
+<form asp-action="AddStep1" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Destination" class="form-label"></label>
+        <input asp-for="Destination" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Destination" class="text-danger"></span>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="StartDate" class="form-label"></label>
+            <input asp-for="StartDate" class="form-control" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="EndDate" class="form-label"></label>
+            <input asp-for="EndDate" class="form-control" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">Next</button>
+        <button type="submit" name="action" value="cancel" class="btn btn-outline-secondary">Cancel</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

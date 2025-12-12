@@ -1,0 +1,110 @@
+@model TripsApp.Models.ManageUsersViewModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h2 class="mb-3">Manage Users</h2>
+<p class="text-muted">Admins can add users, remove users, and control Admin role membership.</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <div class="alert alert-info">@Model.StatusMessage</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Add User</h5>
+                <form asp-action="AddUser" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewUserName" class="form-label"></label>
+                        <input asp-for="NewUserName" class="form-control" autocomplete="username" />
+                        <span asp-validation-for="NewUserName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewPassword" class="form-label"></label>
+                        <input asp-for="NewPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                        <div class="form-text">At least 6 characters with one uppercase letter.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Existing Users</h5>
+                @if (!Model.Users.Any())
+                {
+                    <div class="alert alert-light">No users found.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Roles</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.Users)
+                                {
+                                    <tr>
+                                        @{ var isPrimaryAdmin = user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase); }
+                                        <td>@user.UserName</td>
+                                        <td>
+                                            @if (user.IsAdmin)
+                                            {
+                                                <span class="badge bg-success">Admin</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">User</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                @if (user.IsAdmin)
+                                                {
+                                                    <form asp-action="RemoveFromAdmin" method="post" class="d-inline">
+                                                        <input type="hidden" name="id" value="@user.Id" />
+                                                        <button type="submit" class="btn btn-outline-secondary btn-sm" @(isPrimaryAdmin ? "disabled" : string.Empty)>Remove Admin</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="AddToAdmin" method="post" class="d-inline">
+                                                        <input type="hidden" name="id" value="@user.Id" />
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Make Admin</button>
+                                                    </form>
+                                                }
+                                                <form asp-action="DeleteUser" method="post" class="d-inline ms-2">
+                                                    <input type="hidden" name="id" value="@user.Id" />
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" @(isPrimaryAdmin ? "disabled" : string.Empty)>Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
